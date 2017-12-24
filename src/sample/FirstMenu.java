@@ -22,8 +22,11 @@ public class FirstMenu {
     private Parent root;
     private Scene scene;
     private Stage primaryStage;
+    private Main app;
 
-    public FirstMenu(Stage primaryStage) {
+    public FirstMenu(Stage primaryStage, Main app) {
+        primaryStage.setResizable(false);
+        this.app = app;
         stage = primaryStage;
         this.primaryStage = primaryStage;
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("/first_menu.fxml"));
@@ -40,10 +43,10 @@ public class FirstMenu {
     }
 
     @FXML private void gotoClientMode(ActionEvent event) {
-        new ClientMode(primaryStage);
+        new ClientMode(primaryStage, app);
     }
 
     @FXML private void gotoServerMode(ActionEvent event) {
-        new ServerMode(primaryStage);
+        new ServerMode(primaryStage, app);
     }
 }

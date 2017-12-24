@@ -8,11 +8,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import sample.Helper;
+import sample.Main;
 import sample.Question;
 import sample.server.CustomPair;
 
@@ -27,8 +31,10 @@ public class GameView {
     private Scene scene;
     private ClientGameController controller;
 
-    private TextField questionField, leftTop, leftBottom, rightTop, rightBottom, currentResult;
+    private TextField  leftTop, leftBottom, rightTop, rightBottom;
+    private TextArea questionArea;
     private ListView listView;
+    private ImageView rateImage;
 
     public GameView(Stage stage) {
         this.stage = stage;
@@ -72,10 +78,10 @@ public class GameView {
         });
         Platform.runLater(() -> {
 
-            currentResult.setVisible(false);
+            rateImage.setVisible(false);
             listView.setVisible(true);
-            questionField.setVisible(true);
-            questionField.setText(question.getQuestion());
+            questionArea.setVisible(true);
+            questionArea.setText(question.getQuestion());
             ObservableList<String> list = FXCollections.observableList(
                     Arrays.asList(question.getAnswers())
             );
@@ -83,8 +89,9 @@ public class GameView {
         });
     }
 
-    public void setCurrentResult(TextField currentResult) {
-        this.currentResult = currentResult;
+
+    public void setRateImage(ImageView rateImage) {
+        this.rateImage = rateImage;
     }
 
     class MyFormatCell extends ListCell<String> {
@@ -111,9 +118,12 @@ public class GameView {
             formatCell.yourAnswer = yourAnswer;
             return formatCell;
         });
-        currentResult.setVisible(true);
-        if (ok) currentResult.setText("GOOD");
-        else currentResult.setText("BAD");
+        rateImage.setVisible(true);
+        Image img;
+
+        if (ok) img = new Image(String.valueOf(Main.class.getResource("/good.png")));
+        else img = new Image(String.valueOf(Main.class.getResource("/bad.png")));
+        rateImage.setImage(img);
     }
 
     public void setFinishScene(Player self, Player enemy) {
@@ -145,8 +155,8 @@ public class GameView {
         rightBottom.setText(p2 + "");
     }
 
-    public void setQuestionField(TextField qustionField) {
-        this.questionField = qustionField;
+    public void setQuestionArea(TextArea qustionArea) {
+        this.questionArea = qustionArea;
     }
 
     public void setListView(ListView listView) {

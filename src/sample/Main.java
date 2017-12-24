@@ -10,11 +10,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        new FirstMenu(primaryStage);
+        new FirstMenu(primaryStage, this);
     }
 
 
     public static void main(String[] args) {
         launch(args);
     }
+
+
 }

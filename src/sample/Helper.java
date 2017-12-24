@@ -9,10 +9,12 @@ public class Helper {
     public static final int TIMES = 9;
     private static final int ANSWERS = 4;
     public static final int WIDTH = 500, HEIGHT = 400;
-    public static final String NEVER_STRING = "jkf;ajraewr21945130834172ewufsjakdsllfjdsndvnkzfjou2491028";
+    public static final String NEVER_STRING = "lkfjd;aklfjaoiewrajwrasdfadsfdas";
 
 
     private static List<Question> questions;
+    public static final String CLOSING_MESSAGE = "SORRY_WE ARE _CLosing !324ksdf2";
+
     public static List<Question> parseQuestions() {
         if (questions == null) {
             questions = new ArrayList<>();

@@ -6,6 +6,7 @@ import sample.Question;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +26,39 @@ public class ServerGame extends Thread {
         Collections.shuffle(order);
     }
 
+    private void closeTwo(ServerPlayer one, ServerPlayer another) {
+        System.out.println("CLOSING TWO");
+        for (ServerPlayer a : new ServerPlayer[]{one, another}) {
+            try {
+                a.sendCloseMessage();
+                a.getSocket().close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+    }
+    class ThreadForSend extends Thread{
+        private ServerPlayer one, another;
+        private CustomPair ans;
+        private final int number;
+        public ThreadForSend(ServerPlayer one, ServerPlayer another, CustomPair ans, int number) {
+            this.one = one;
+            this.number = number;
+            this.another = another;
+            this.ans = ans;
+        }
+
+        @Override
+        public void run() {
+            try {
+                one.sendQuestion(number, ans);
+            } catch (IOException|NumberFormatException e) {
+                closeTwo(one, another);
+            }
+        }
+    }
+
     @Override
     public void run() {
         try {
@@ -33,41 +67,22 @@ public class ServerGame extends Thread {
             one.sendName(another.getName());
             another.sendName(one.getName());
             for (int j = 0; j < Helper.TIMES; ++j) {
+                System.out.println("j = " + j);
                 CustomPair ans1 = new CustomPair(-1, -1L);
-                int number = order.get(j);
-                Thread t1 = new Thread(() -> {
-                    try {
-                        one.sendQuestion(number, ans1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
                 CustomPair ans2 = new CustomPair(-1, -1L);
-                Thread t2 = new Thread(() -> {
-                    try {
-                        another.sendQuestion(number, ans2);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                int number = order.get(j);
+                ThreadForSend t1 = new ThreadForSend(one, another, ans1, number);
+                ThreadForSend t2 = new ThreadForSend(another, one, ans2, number);
+
                 t1.start();
                 t2.start();
 
                 try {
-                    System.out.println("waiting ans1");
                     t1.join();
-                    System.out.println("received ans1");
-
-                    System.out.println("waiting ans2");
                     t2.join();
-                    System.out.println("received ans2");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("ans1 = " + ans1);
-                System.out.println("ans2 = " + ans2);
-                System.out.println("questions.get(i).getRightAnswer() = " + questions.get(number).getRightAnswer());
 
                 int winner;
                 if (ans1.getFirst() == questions.get(number).getRightAnswer() &&
@@ -85,13 +100,14 @@ public class ServerGame extends Thread {
                 one.sendAnswer(winner == 1, ans2.getFirst());
                 another.sendAnswer(winner == 2, ans1.getFirst());
                 try {
-                    Thread.sleep(17000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException|NumberFormatException e) {
             e.printStackTrace();
+            closeTwo(one, another);
         }
     }
 }

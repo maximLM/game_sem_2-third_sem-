@@ -3,8 +3,10 @@ package sample.client;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
+import sample.Main;
 import sample.server.ServerMode;
 
 import java.io.*;
@@ -24,9 +26,10 @@ public class ClientMode {
     private Scene scene;
     private Group root;
     private Player self;
+    private Main app;
 
-
-    public ClientMode(Stage primaryStage) {
+    public ClientMode(Stage primaryStage, Main app) {
+        this.app = app;
         stage = primaryStage;
         initStage();
         getName();
@@ -48,15 +51,27 @@ public class ClientMode {
                             socket.getInputStream()
                     )
             );
+            stage.setOnCloseRequest((event) -> {
+                while (true) {
+                    try {
+                        app.stop();
+//                    socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             out = new PrintWriter(socket.getOutputStream());
             out.println(self.getName());
             out.flush();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    startGame();
-                }
-            }).start();
+            new Thread(() -> startGame()).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,10 +121,19 @@ public class ClientMode {
         }
     }
 
-    public void onGameFinished() {
+    public void onGameFinished(String message) {
         Platform.runLater(() -> {
-            System.out.println("GAME FINISHED");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("That's all");
+            alert.setHeaderText("Great game, dude");
+            alert.setContentText(message);
+            alert.showAndWait();
             stage.close();
+            try {
+                app.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 
