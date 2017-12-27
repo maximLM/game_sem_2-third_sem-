@@ -17,8 +17,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import sample.Helper;
 import sample.Main;
-import sample.Question;
-import sample.server.CustomPair;
+import sample.entities.Question;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -59,25 +58,21 @@ public class GameView {
     }
 
     public void setWaitScene() {
-//        listView.setVisible(false);
-//        questionField.setVisible(false);
+        // pass
     }
 
     public void showQuestion(Question question) {
         listView.setMouseTransparent(false);
         listView.setFocusTraversable(true);
-        listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-            @Override
-            public ListCell<String> call(ListView<String> list) {
-                MyFormatCell formatCell = new MyFormatCell();
-                formatCell.rightAnswer = Helper.NEVER_STRING;
-                formatCell.oppenentAnswer = Helper.NEVER_STRING;
-                formatCell.yourAnswer = Helper.NEVER_STRING;
-                return formatCell;
-            }
+        listView.setCellFactory((Callback<ListView<String>, ListCell<String>>) list -> {
+            MyFormatCell formatCell = new MyFormatCell();
+            formatCell.rightAnswer = Helper.NEVER_STRING;
+            formatCell.oppenentAnswer = Helper.NEVER_STRING;
+            formatCell.yourAnswer = Helper.NEVER_STRING;
+            return formatCell;
         });
-        Platform.runLater(() -> {
 
+        Platform.runLater(() -> {
             rateImage.setVisible(false);
             listView.setVisible(true);
             questionArea.setVisible(true);
@@ -126,10 +121,6 @@ public class GameView {
         rateImage.setImage(img);
     }
 
-    public void setFinishScene(Player self, Player enemy) {
-
-    }
-
     public ClientGameController getController() {
         return controller;
     }
@@ -155,8 +146,8 @@ public class GameView {
         rightBottom.setText(p2 + "");
     }
 
-    public void setQuestionArea(TextArea qustionArea) {
-        this.questionArea = qustionArea;
+    public void setQuestionArea(TextArea questionArea) {
+        this.questionArea = questionArea;
     }
 
     public void setListView(ListView listView) {

@@ -1,16 +1,14 @@
 package sample.client;
 
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import sample.Main;
-import sample.Question;
-import sample.server.CustomPair;
+import sample.Helper;
+import sample.entities.Player;
+import sample.entities.Question;
+import sample.entities.CustomPair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,11 +42,12 @@ public class ClientGameController {
         model = new ClientGame(self, enemy, in, out, mode);
         clientMode = mode;
         this.view = view;
-        System.out.println("Created controller");
-        System.out.println("self = " + self);
-        System.out.println("enemy = " + enemy);
         leftTop.setText(self.getName());
         rightTop.setText(enemy.getName());
+        leftBottom.setStyle("-fx-background-color: rgba(0, 0, 0, 0);"+
+                "-fx-font-alignment: center;");
+        rightBottom.setStyle("-fx-background-color: rgba(0, 0, 0, 0);"+
+                "-fx-font-alignment: center;");
         view.setLeftTop(leftTop);
         view.setRightTop(rightTop);
         view.setLeftBottom(leftBottom);
@@ -60,7 +59,6 @@ public class ClientGameController {
         view.updateScore(self.getPoints(), enemy.getPoints());
         listView.setOnMouseClicked(event -> {
             int ind = listView.getSelectionModel().getSelectedIndex();
-            System.out.println("clicked on " + ind);
             if (ind == -1) return;
             onAnswerReceived(ind);
         });
@@ -87,7 +85,6 @@ public class ClientGameController {
             try {
                 CustomPair ok = model.getResult();
                 Question q = model.getCurrentQuestion();
-                System.out.println("q.getRightAnswer() = " + q.getRightAnswer());
                 view.showRightAnswer(q.getAnswers()[q.getRightAnswer() - 1],
                         q.getAnswers()[(int) (ok.getSecond() - 1)],
                         q.getAnswers()[n - 1],
@@ -96,8 +93,10 @@ public class ClientGameController {
                 e.printStackTrace();
             }
             if (model.getTimes() == 0) {
-                clientMode.onGameFinished((model.getSelf().getPoints() > model.getEnemy().getPoints()) ?
-                        "You win" : "You lose");
+                Helper.onGameFinished((model.getSelf().getPoints() > model.getEnemy().getPoints()) ?
+                        "You win" : "You lose",
+                        clientMode.getApp(),
+                        clientMode.getStage());
             } else {
                 askQuestion();
             }

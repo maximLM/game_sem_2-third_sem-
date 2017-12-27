@@ -1,4 +1,4 @@
-package sample.client;
+package sample.entities;
 
 public class Player {
     private String name;

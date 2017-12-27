@@ -1,13 +1,13 @@
 package sample.client;
 
 import sample.Helper;
-import sample.Question;
-import sample.server.CustomPair;
+import sample.entities.Player;
+import sample.entities.Question;
+import sample.entities.CustomPair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.SocketException;
 import java.util.List;
 
 public class ClientGame {
@@ -18,6 +18,7 @@ public class ClientGame {
     private List<Question> questions;
     private Question currentQuestion;
     private ClientMode clientMode;
+    private BufferedReader in;
 
     public ClientGame(Player self, Player enemy, BufferedReader in, PrintWriter out, ClientMode mode) {
         this.clientMode = mode;
@@ -31,9 +32,7 @@ public class ClientGame {
 
 
     public Question getNewQuestion() throws IOException {
-        System.out.println("asking");
         int n = Integer.parseInt(readLine());
-        System.out.println("received n = " + n);
         return currentQuestion = questions.get(n);
     }
 
@@ -48,20 +47,23 @@ public class ClientGame {
         if (ok == 1) self.incPoints();
         else enemy.incPoints();
         --times;
-
         return new CustomPair(ok, Integer.parseInt(readLine()));
     }
 
-    private String readLine() throws IOException {
+    public String readLine() throws IOException {
         try {
             String ret = buf.readLine();
             if (ret.equals(Helper.CLOSING_MESSAGE))
-                clientMode.onGameFinished("Sorry your oppenent disconnected");
+                Helper.onGameFinished("Sorry your oppenent disconnected",
+                        clientMode.getApp(),
+                        clientMode.getStage());
             return ret;
         } catch (IOException e) {
-            clientMode.onGameFinished("Sorry your oppenent disconnected");
+            Helper.onGameFinished("Sorry your oppenent disconnected",
+                    clientMode.getApp(),
+                    clientMode.getStage());
         }
-        return null;
+        return "";
     }
 
     public Player getSelf() {
@@ -86,5 +88,9 @@ public class ClientGame {
 
     public int getTimes() {
         return times;
+    }
+
+    public void setIn(BufferedReader in) {
+        this.in = in;
     }
 }

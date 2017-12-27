@@ -1,4 +1,4 @@
-package sample.server;
+package sample.entities;
 
 public class CustomPair {
     private int first;

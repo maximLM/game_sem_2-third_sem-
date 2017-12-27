@@ -1,4 +1,6 @@
-package sample;
+package sample.entities;
+
+import java.util.Arrays;
 
 public class Question {
     private String question;
@@ -11,6 +13,11 @@ public class Question {
         this.rightAnswer = rightAnswer;
     }
 
+    public int getAnwerIndex(String s) {
+        for (int i = 0; i < answers.length; ++i)
+            if (answers[i].equals(s)) return i;
+        return -1;
+    }
     public String getQuestion() {
         return question;
     }

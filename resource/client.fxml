@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.client.ClientGameController">
    <children>
-      <ListView fx:id="listView" layoutX="91.0" layoutY="200.0" prefHeight="161.0" prefWidth="333.0" />
-      <TextArea fx:id="questionArea" editable="false" layoutX="91.0" layoutY="113.0" prefHeight="62.0" prefWidth="333.0" wrapText="true" />
-      <TextField fx:id="leftTop" editable="false" layoutX="14.0" layoutY="21.0" />
+      <ListView fx:id="listView" layoutX="91.0" layoutY="200.0" prefHeight="115.0" prefWidth="333.0" />
+      <TextArea fx:id="questionArea" editable="false" layoutX="91.0" layoutY="113.0" prefHeight="62.0" prefWidth="333.0" text="Waiting your enemy)" wrapText="true">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets></TextArea>
+      <TextField fx:id="leftTop" editable="false" layoutX="14.0" layoutY="21.0">
+         <effect>
+            <InnerShadow />
+         </effect></TextField>
       <TextField fx:id="leftBottom" editable="false" layoutX="14.0" layoutY="54.0" />
-      <TextField fx:id="rightTop" editable="false" layoutX="337.0" layoutY="21.0" />
+      <TextField fx:id="rightTop" editable="false" layoutX="337.0" layoutY="21.0">
+         <effect>
+            <InnerShadow />
+         </effect></TextField>
       <TextField fx:id="rightBottom" editable="false" layoutX="337.0" layoutY="54.0" />
       <ImageView fx:id="rateImage" fitHeight="74.0" fitWidth="94.0" layoutX="203.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true" />
 

@@ -1,12 +1,11 @@
 package sample.client;
 
-import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import sample.Main;
+import sample.entities.Player;
 import sample.server.ServerMode;
 
 import java.io.*;
@@ -22,7 +21,6 @@ public class ClientMode {
     private BufferedReader in;
     private PrintWriter out;
     private Stage stage;
-    private int victories, loses;
     private Scene scene;
     private Group root;
     private Player self;
@@ -44,7 +42,6 @@ public class ClientMode {
 
     private void prepare() {
         try {
-            setWaitScene();
             socket = new Socket(InetAddress.getByName("localhost"), ServerMode.PORT);
             in = new BufferedReader(
                     new InputStreamReader(
@@ -52,20 +49,11 @@ public class ClientMode {
                     )
             );
             stage.setOnCloseRequest((event) -> {
-                while (true) {
-                    try {
-                        app.stop();
-//                    socket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    System.exit(0);
+                    app.stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
             out = new PrintWriter(socket.getOutputStream());
@@ -97,11 +85,6 @@ public class ClientMode {
         }
     }
 
-    private void setWaitScene() {
-
-    }
-
-
     public void onUserNamePicked(String name) {
         self = new Player(name);
         prepare();
@@ -109,7 +92,7 @@ public class ClientMode {
 
     public void getName() {
         for (; ; ) {
-            TextInputDialog dialog = new TextInputDialog("walter");
+            TextInputDialog dialog = new TextInputDialog("Unknown");
             dialog.setTitle("Pick Username");
             dialog.setHeaderText("Welcome to my APPLICATION");
             dialog.setContentText("Please enter your name:");
@@ -121,26 +104,17 @@ public class ClientMode {
         }
     }
 
-    public void onGameFinished(String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("That's all");
-            alert.setHeaderText("Great game, dude");
-            alert.setContentText(message);
-            alert.showAndWait();
-            stage.close();
-            try {
-                app.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
 
     public Player getEnemy() throws IOException {
         String name = in.readLine();
-        System.out.println("got = " + name);
-
         return new Player(name);
+    }
+
+    public Main getApp() {
+        return app;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 }

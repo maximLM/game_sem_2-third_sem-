@@ -1,5 +1,6 @@
 package sample.server;
 
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -9,6 +10,7 @@ import sample.Main;
 import sample.server.ServerGame;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -31,34 +33,27 @@ public class ServerMode {
             try {
                 server = new ServerSocket(PORT);
                 stage.setOnCloseRequest((event) -> {
-                    while (true) {
-                        try {
-                            app.stop();
-                            server.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        System.exit(0);
+                        app.stop();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 });
                 System.out.println(server.getInetAddress());
+            } catch (BindException e) {
+                Helper.onGameFinished("Sorry server already exists", app, stage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             while (true) {
                 if (server.isClosed()) return;
                 try {
-
                     Socket s1 = server.accept();
-                    System.out.println("accepted");
                     Socket s2 = server.accept();
-                    System.out.println("accepted2");
                     new ServerGame(s1, s2).start();
                 } catch (IOException e) {
                     e.printStackTrace();

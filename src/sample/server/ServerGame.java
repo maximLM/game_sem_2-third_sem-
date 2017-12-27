@@ -1,12 +1,12 @@
 package sample.server;
 
-import javafx.util.Pair;
 import sample.Helper;
-import sample.Question;
+import sample.entities.CustomPair;
+import sample.entities.Question;
+import sample.entities.ServerPlayer;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,6 @@ public class ServerGame extends Thread {
     }
 
     private void closeTwo(ServerPlayer one, ServerPlayer another) {
-        System.out.println("CLOSING TWO");
         for (ServerPlayer a : new ServerPlayer[]{one, another}) {
             try {
                 a.sendCloseMessage();
@@ -42,6 +41,7 @@ public class ServerGame extends Thread {
         private ServerPlayer one, another;
         private CustomPair ans;
         private final int number;
+
         public ThreadForSend(ServerPlayer one, ServerPlayer another, CustomPair ans, int number) {
             this.one = one;
             this.number = number;
@@ -67,7 +67,6 @@ public class ServerGame extends Thread {
             one.sendName(another.getName());
             another.sendName(one.getName());
             for (int j = 0; j < Helper.TIMES; ++j) {
-                System.out.println("j = " + j);
                 CustomPair ans1 = new CustomPair(-1, -1L);
                 CustomPair ans2 = new CustomPair(-1, -1L);
                 int number = order.get(j);
@@ -84,18 +83,7 @@ public class ServerGame extends Thread {
                     e.printStackTrace();
                 }
 
-                int winner;
-                if (ans1.getFirst() == questions.get(number).getRightAnswer() &&
-                        ans2.getFirst() != questions.get(number).getRightAnswer()) {
-                    winner = 1;
-                } else if (ans1.getFirst() != questions.get(number).getRightAnswer() &&
-                        ans2.getFirst() == questions.get(number).getRightAnswer()) {
-                    winner = 2;
-                } else if (ans1.getSecond() < ans2.getSecond()) {
-                    winner = 1;
-                } else {
-                    winner = 2;
-                }
+                int winner = Helper.getWinner(ans1, ans2, questions.get(number));
 
                 one.sendAnswer(winner == 1, ans2.getFirst());
                 another.sendAnswer(winner == 2, ans1.getFirst());

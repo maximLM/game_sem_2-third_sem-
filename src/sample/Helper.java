@@ -1,5 +1,11 @@
 package sample;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.stage.Stage;
+import sample.entities.Question;
+import sample.entities.CustomPair;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +17,27 @@ public class Helper {
     public static final int WIDTH = 500, HEIGHT = 400;
     public static final String NEVER_STRING = "lkfjd;aklfjaoiewrajwrasdfadsfdas";
 
-
     private static List<Question> questions;
+
     public static final String CLOSING_MESSAGE = "SORRY_WE ARE _CLosing !324ksdf2";
+
+    public static void onGameFinished(String message, Main app, Stage stage) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("That's all");
+            alert.setHeaderText("Great game, dude");
+            alert.setContentText(message);
+            alert.showAndWait();
+            stage.close();
+            System.exit(0);
+            try {
+                app.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 
     public static List<Question> parseQuestions() {
         if (questions == null) {
@@ -41,8 +65,23 @@ public class Helper {
                 e.printStackTrace();
             }
 
-            System.out.println(questions.get(3).getQuestion());
         }
         return questions;
+    }
+
+    public static int getWinner(CustomPair ans1, CustomPair ans2, Question question) {
+        int winner;
+        if (ans1.getFirst() == question.getRightAnswer() &&
+                ans2.getFirst() != question.getRightAnswer()) {
+            winner = 1;
+        } else if (ans1.getFirst() != question.getRightAnswer() &&
+                ans2.getFirst() == question.getRightAnswer()) {
+            winner = 2;
+        } else if (ans1.getSecond() < ans2.getSecond()) {
+            winner = 1;
+        } else {
+            winner = 2;
+        }
+        return winner;
     }
 }
